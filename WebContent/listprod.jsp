@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>YOUR NAME Grocery</title>
+<title>Julia & Ivona's Grocery</title>
 </head>
 <body>
 
@@ -28,20 +28,58 @@ catch (java.lang.ClassNotFoundException e)
 	out.println("ClassNotFoundException: " +e);
 }
 
+String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+String uid = "sa";
+String pw = "304#sa#pw";
 // Variable name now contains the search string the user entered
 // Use it to build a query and print out the resultset.  Make sure to use PreparedStatement!
 
-// Make the connection
+try (Connection con = DriverManager.getConnection(url, uid, pw)) {
+    //query
+	String query;
+	if (name != null && !name.isBlank()) {
+    	query = "SELECT productId, productName, productPrice FROM Product WHERE productName LIKE ?";
+	} else {
+    	query = "SELECT productId, productName, productPrice FROM Product";
+	}
 
-// Print out the ResultSet
 
-// For each product create a link of the form
-// addcart.jsp?id=productId&name=productName&price=productPrice
-// Close connection
+        // Prepare statement
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            if (name != null && !name.isBlank()) { //handles empty submits
+                pstmt.setString(1, "%" + name + "%");
+            }
+
+			//table
+            try (ResultSet rs = pstmt.executeQuery()) {
+                out.println("<table border='0'>"); //open table
+			out.println("<tr><th>Product Name</th><th>Price</th></tr>");  //table headers                
+                while (rs.next()) {
+                    int id = rs.getInt("productId");
+                    String productName = rs.getString("productName");
+                    double price = rs.getDouble("productPrice");
+
+    		out.println("<td><a href='addcart.jsp?id=" + URLEncoder.encode(String.valueOf(id), "UTF-8")
+            + "&name=" + URLEncoder.encode(productName, "UTF-8")
+            + "&price=" + URLEncoder.encode(String.valueOf(price), "UTF-8") 
+            + "'>Add to Cart</a> " + productName + "</td>");
+            out.println("<td>$" + String.format("%.2f", price) + "</td>"); 
+            out.println("</tr>"); //close inner table
+                }
+                out.println("</table>"); // Close table
+            }
+        }
+    } 
+	// Close connection
+	catch (SQLException ex) { 	
+		out.println(ex); 
+}
+
 
 // Useful code for formatting currency values:
 // NumberFormat currFormat = NumberFormat.getCurrencyInstance();
 // out.println(currFormat.format(5.0);	// Prints $5.00
+
 %>
 
 </body>
