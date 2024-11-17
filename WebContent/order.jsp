@@ -152,7 +152,6 @@ try (Connection con = DriverManager.getConnection(url, uid, pw)) {
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="java.sql.*, java.util.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF8"%>
 <!DOCTYPE html>
 <html>
@@ -171,28 +170,102 @@ String custId = request.getParameter("customerId");
 @SuppressWarnings({"unchecked"})
 HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
 
-String errorMessage = "";
 boolean isValidCustomer = false;
+boolean hasProducts = productList != null && !productList.isEmpty();
 
-    // Validate customer ID
-    try (Connection conn = DriverManager.getConnection(url, uid, pw)) { // Replace with your connection utility
-        String sql = "SELECT COUNT(*) FROM customer WHERE customerId = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, custId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    isValidCustomer = rs.getInt(1) > 0;
-                }
-            }
+// Validate customer ID
+try (Connection conn = DriverManager.getConnection(url, uid, pw)) { 
+
+    // Query to count how many custIds are found in the database
+    String sql = "SELECT COUNT(*) FROM customer WHERE customerId = ?";
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setString(1, custId);
+    ResultSet rstId = stmt.executeQuery();
+    
+    // If the ID showed up in the database, set isValidCustomer = true;
+    if (rstId.next()) {
+        int countId = rstId.getInt(1);
+        isValidCustomer = countId > 0;  
+    }
+
+} catch (Exception e) {
+    e.printStackTrace();
+}
+
+// Check if the customer ID is valid
+if (!isValidCustomer) {
+    out.println("<h1>Invalid customer ID. Go back to the previous page and try again.</h1>");
+    return; // Stop further execution if customer ID is invalid
+}
+
+// Check if there are products in the cart
+if (productList == null || productList.isEmpty()) {
+    out.println("<h1>Your cart is empty! </h1>");
+    return; // Stop further execution if the cart is empty
+} else {
+    out.println("productList is not empty. Contents: " + productList);
+}
+
+try (Connection conn = DriverManager.getConnection(url, uid, pw)) { 
+
+    Integer custIdNum = Integer.parseInt(custId);
+    
+    // Get customer info
+    String custInfoQuery = "SELECT address, city, state, postalCode, country FROM customer WHERE customerId = ?";
+    PreparedStatement custInfoStmt = conn.prepareStatement(custInfoQuery);
+    custInfoStmt.setInt(1, custIdNum);
+    ResultSet custRst = custInfoStmt.executeQuery();
+    
+    // Fetch the customer info if it exists
+    String address = null, city = null, state = null, postalCode = null, country = null;
+    if (custRst.next()) {
+        address = custRst.getString("address");
+        city = custRst.getString("city");
+        state = custRst.getString("state");
+        postalCode = custRst.getString("postalCode");
+        country = custRst.getString("country");
+    }
+
+    // Save order information to the database
+    String ordersql = "INSERT INTO ordersummary (orderDate, totalAmount, shiptoAddress, shiptoCity, shiptoState, shiptoPostalCode, shiptoCountry, customerId) VALUES (GETDATE(), ?, ?, ?, ?, ?, ?, ?)";
+
+    PreparedStatement orderStmt = conn.prepareStatement(ordersql, Statement.RETURN_GENERATED_KEYS);    
+    
+    double totalAmount = 200; // (NEED TO EDIT )just for now cuz i didnt wanna actual calculate it im tired lol
+
+    
+
+    orderStmt.setDouble(1, totalAmount);
+    orderStmt.setString(2, address);
+    orderStmt.setString(3, city);
+    orderStmt.setString(4, state);
+    orderStmt.setString(5, postalCode);
+    orderStmt.setString(6, country);
+    orderStmt.setInt(7, custIdNum);
+
+    int rowsAffected = orderStmt.executeUpdate();
+    
+    // Check if the order was inserted successfully and retrieve the generated orderId
+    if (rowsAffected > 0) {
+        ResultSet keys = orderStmt.getGeneratedKeys();
+        if (keys.next()) {
+            Integer orderId = keys.getInt(1);
+            out.println("<h1>Order successfully placed. Order ID: " + orderId + "</h1>");
+        } else {
+            out.println("<h1>Order placed, but could not retrieve the order ID.</h1>");
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        errorMessage = "Database error occurred while verifying customer ID.";
+    } else {
+        out.println("<h1>Failed to place the order.</h1>");
     }
 
-    if(isValidCustomer == false){
-        out.println("Ivalid customer ID");
-    }
+} catch (SQLException e) {
+    e.printStackTrace();
+    out.println("<h1>Error occurred while processing your order: " + e.getMessage() + "</h1>");
+} catch (Exception e) {
+    e.printStackTrace();
+    out.println("<h1>Unexpected error occurred. Please try again later.</h1>");
+}
+
 
  
 
