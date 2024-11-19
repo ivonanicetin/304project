@@ -94,23 +94,7 @@ double totalAmount = 0.0; //setup for total amount calculations
 try (Connection con = DriverManager.getConnection(url, uid, pw)) {
     String sql = "INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (?,?,?,?)";
     try (PreparedStatement stmt = con.prepareStatement(sql)) {
-        
-        //start of table - headers
-        out.println("<h1>Your Order Summary</h1>");
-            out.println("<table border='0' cellpadding='' cellspacing='0' style='border-collapse: collapse; width: 20%;'>");
-            out.println("<thead>");
-            out.println("<tr>");
-            out.println("<th>Product ID</th>");
-            out.println("<th>Product Name</th>");
-            out.println("<th>Quantity</th>");
-            out.println("<th>Price</th>");
-            out.println("<th>Subtotal</th>");
-            out.println("</tr>");
-            out.println("</thead>");
-            out.println("<tbody>");
-        //end table headers
-
-        Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
+            Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
 	        while (iterator.hasNext()){
             Map.Entry<String, ArrayList<Object>> entry = iterator.next();
 		    ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
@@ -127,33 +111,61 @@ try (Connection con = DriverManager.getConnection(url, uid, pw)) {
                     stmt.executeUpdate();
 
                         double subtotal = qty * price; //to show if 1 item is in order multiple times
-                        totalAmount += subtotal;
-
-                //adding data to table
-                out.println("<tr>");
-                    out.println("<td>" + productId + "</td>");
-                    out.println("<td>" + productName + "</td>");
-                    out.println("<td>" + qty + "</td>");
-                    out.println("<td>" + NumberFormat.getCurrencyInstance().format(price) + "</td>");
-                    out.println("<td>" + NumberFormat.getCurrencyInstance().format(subtotal) + "</td>");
-                    out.println("</tr>");        
+                        totalAmount += subtotal;       
         }
-                //close table
-                out.println("</tbody>");
-                    out.println("<tfoot>");
-                    out.println("<tr>");
-                //adding total amount below the rest of the data
-                    out.println("<td colspan='4' style='text-align: right;'><b>Total Amount</b></td>");
-                    out.println("<td><b>" + NumberFormat.getCurrencyInstance().format(totalAmount) + "</b></td>");
-                    out.println("</tr>");
-                    out.println("</tfoot>");
-                    out.println("</table>");
+          
         }
             }catch(SQLException e){
                 e.printStackTrace();
                 out.println("products were NOT inserted into orderproduct " + e.getMessage());
                 return;
             }
+
+            //formatting borrowed from showcart.jsp
+            out.println("<h1>Your Order Summary</h1>");
+            out.print("<table><tr><th>Product Id</th><th>Product Name</th><th>Quantity</th>");
+            out.println("<th>Price</th><th>Subtotal</th></tr>");
+
+            double total = 0; // To track the total order amount
+            Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, ArrayList<Object>> entry = iterator.next();
+                ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
+                if (product.size() < 4) {
+                    out.println("Expected product with four entries. Got: " + product);
+                    continue;
+                }
+
+                out.print("<tr><td>" + product.get(0) + "</td>");
+                out.print("<td>" + product.get(1) + "</td>");
+
+                out.print("<td align=\"center\">" + product.get(3) + "</td>");
+                Object price = product.get(2);
+                Object itemQty = product.get(3);
+                double pr = 0;
+                int qty = 0;
+
+                try {
+                    pr = Double.parseDouble(price.toString());
+                } catch (Exception e) {
+                    out.println("Invalid price for product: " + product.get(0) + " price: " + price);
+                }
+
+                try {
+                    qty = Integer.parseInt(itemQty.toString());
+                } catch (Exception e) {
+                    out.println("Invalid quantity for product: " + product.get(0) + " quantity: " + qty);
+                }
+
+                out.print("<td align=\"right\">" + NumberFormat.getCurrencyInstance().format(pr) + "</td>");
+                out.print("<td align=\"right\">" + NumberFormat.getCurrencyInstance().format(pr * qty) + "</td></tr>");
+                total += pr * qty;
+            }
+
+            out.println("<tr><td colspan=\"4\" align=\"right\"><b>Order Total</b></td>"
+                    + "<td align=\"right\">" + NumberFormat.getCurrencyInstance().format(total) + "</td></tr>");
+            out.println("</table>");
+
 
             // update total amount
             try (Connection con = DriverManager.getConnection(url, uid, pw)) {
