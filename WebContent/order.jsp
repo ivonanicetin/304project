@@ -52,7 +52,7 @@ boolean isValidCustomer = false;
     }
 // customer not valid
     if(isValidCustomer == false){
-        out.println("Invalid customer ID");
+        out.println("<h1>Invalid customer ID</h1>");
         return;
     }
 
@@ -65,11 +65,15 @@ boolean isValidCustomer = false;
 // Save order information to database
     int orderId = 0; //allows first order recieved to be 1
     try (Connection con = DriverManager.getConnection(url, uid, pw)) {
-        String sql = "INSERT INTO ordersummary (customerId, totalAmount) VALUES(?,?)";
+        String sql = "INSERT INTO ordersummary (customerId, totalAmount, orderDate) VALUES(?,?, ?)";
         try(PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
         int customerId = Integer.parseInt(custId);
         pstmt.setInt(1, customerId);
         pstmt.setDouble(2, 0.0);
+        //get the date / time of order
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(System.currentTimeMillis());
+        pstmt.setTimestamp(3, timestamp);
+
         pstmt.executeUpdate();
 
     try(ResultSet keys = pstmt.getGeneratedKeys()){
