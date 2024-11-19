@@ -13,7 +13,8 @@
 </head>
 <body>
 
-<% 
+<%
+
 // Make connection
 String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
 String uid = "sa";
