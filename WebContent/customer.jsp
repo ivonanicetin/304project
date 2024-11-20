@@ -30,10 +30,17 @@
 
             while (rs.next()) {
                 
-                out.println("<tr><td><th>Id</th></td><td>"+ rs.getInt("customerId") + "</td></tr>");
-				out.println("<tr><td><th>Name</th></td><td>"+ rs.getString("firstname") + " "+rs.getString("lastname") + "</td></tr>");
-            	out.println("<tr><td><th>Id</th></td><td>"+ rs.getString("email") + "</td></tr>");
-          		out.println("<tr><td><th>Id</th></td><td>"+ rs.getString("phonenum") + "</td></tr>");
+                out.println("<tr><th>Id</th><td>"+ rs.getInt("customerId") + "</td></tr>");
+				out.println("<tr><th>First Name</th><td>"+ rs.getString("firstname") + "</td></tr>");
+                out.println("<tr><th>Last Name</th><td>"+ rs.getString("lastname") + "</td></tr>");
+            	out.println("<tr><th>Email</th><td>"+ rs.getString("email") + "</td></tr>");
+          		out.println("<tr><th>Phone </th><td>"+ rs.getString("phonenum") + "</td></tr>");
+                out.println("<tr><th>Address</th><td>"+ rs.getString("address") + "</td></tr>");
+                out.println("<tr><th>City</th><td>"+ rs.getString("city") + "</td></tr>");
+                out.println("<tr><th>State</th><td>"+ rs.getString("state") + "</td></tr>");
+                out.println("<tr><th>Postal Code</th><td>"+ rs.getString("postalCode") + "</td></tr>");
+                out.println("<tr><th>Country</th><td>"+ rs.getString("country") + "</td></tr>");
+                out.println("<tr><th>User id</th><td>"+ userName + "</td></tr>");
       
             }
 
