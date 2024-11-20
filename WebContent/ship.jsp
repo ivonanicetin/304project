@@ -9,7 +9,7 @@
 
 <html>
 <head>
-<title>YOUR NAME Grocery Shipment Processing</title>
+<title>Julia & Ivona Grocery Shipment Processing</title>
 </head>
 <body>
         

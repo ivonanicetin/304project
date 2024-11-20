@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <title>Julia and Ivona's Grocery Main Page</title>
+        <title>Julia & Ivona's Grocery Main Page</title>
 </head>
 <body>
 <h1 align="center">Welcome to Julia and Ivona's Grocery</h1>

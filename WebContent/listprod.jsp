@@ -53,18 +53,26 @@ try (Connection con = DriverManager.getConnection(url, uid, pw)) {
 			//table
             try (ResultSet rs = pstmt.executeQuery()) {
                 out.println("<table border='0'>"); //open table
-			out.println("<tr><th>Product Name</th><th>Price</th></tr>");  //table headers                
+			    out.println("<tr><th> </th><th>Product</th><th>Price</th></tr>");     
                 while (rs.next()) {
                     int id = rs.getInt("productId");
                     String productName = rs.getString("productName");
                     double price = rs.getDouble("productPrice");
 
-    		out.println("<td><a href='addcart.jsp?id=" + URLEncoder.encode(String.valueOf(id), "UTF-8")
-            + "&name=" + URLEncoder.encode(productName, "UTF-8")
-            + "&price=" + URLEncoder.encode(String.valueOf(price), "UTF-8") 
-            + "'>Add to Cart</a> " + productName + "</td>");
-            out.println("<td>$" + String.format("%.2f", price) + "</td>"); 
-            out.println("</tr>"); //close inner table
+         
+
+    		out.println("<tr>"); //open table
+// Add to Cart
+out.println("<td><a href='addcart.jsp?id=" + URLEncoder.encode(String.valueOf(id), "UTF-8")
+        + "&name=" + URLEncoder.encode(productName, "UTF-8")
+        + "&price=" + URLEncoder.encode(String.valueOf(price), "UTF-8") 
+        + "'>Add to Cart</a></td>");
+// updated product to hyperlink to image
+out.println("<td><a href='product.jsp?id=" + id + "'>" + productName + "</a></td>");
+
+// Price 
+out.println("<td>$" + String.format("%.2f", price) + "</td>");
+out.println("</tr>"); //close inner table
                 }
                 out.println("</table>"); // Close table
             }
