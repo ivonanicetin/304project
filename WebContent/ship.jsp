@@ -31,8 +31,6 @@ boolean transactionSuccess = true;
 try {
 	getConnection(); // Establish database connection
 	// TODO: Check if valid order id in database
-
-	
 	PreparedStatement psmtValidateOrd = con.prepareStatement("SELECT orderId FROM ordersummary WHERE orderId = ?");
 	psmtValidateOrd.setString(1, orderId); // Set the parameter to the provided orderId
 
@@ -82,35 +80,69 @@ try {
 	psmtShipRec.close();
 
 // TODO: For each item verify sufficient quantity available in warehouse 1
-	if(transactionSuccess){
-		
-	}
-// TODO: If any item does not have sufficient inventory, cancel transaction and rollback. Otherwise, update inventory for each item.
+for (Map<String, Object> item : orderItems) {
+    int productId = (int) item.get("productId");
+    int requestedQuantity = (int) item.get("quantity");
+
+    // Check inventory
+    PreparedStatement psmtInventory = con.prepareStatement(
+        "SELECT quantity FROM productinventory WHERE productId = ? AND warehouseId = ?");
+    psmtInventory.setInt(1, productId);
+    psmtInventory.setInt(2, 1); // warehouseId = 1
+
+    ResultSet rsInventory = psmtInventory.executeQuery();
+    if (rsInventory.next()) {
+        int availableQuantity = rsInventory.getInt("quantity");
+        if (availableQuantity < requestedQuantity) {
+            out.println("<p>Shipment not done. Insufficient inventory for product id: " + productId + ".</p>");
+            transactionSuccess = false; // transaction failed
+            break;
+        } else {
+            // TODO: If any item does not have sufficient inventory, cancel transaction and rollback. Otherwise, update inventory for each item.
+            PreparedStatement psmtUpdateInventory = con.prepareStatement(
+                "UPDATE productinventory SET quantity = quantity - ? WHERE productId = ? AND warehouseId = ?");
+            psmtUpdateInventory.setInt(1, requestedQuantity);
+            psmtUpdateInventory.setInt(2, productId);
+            psmtUpdateInventory.setInt(3, 1);
+            psmtUpdateInventory.executeUpdate();
+            psmtUpdateInventory.close();
+
+            out.println("<p>Ordered product: " + productId + ", Qty: " + requestedQuantity + ", Previous Inventory: "+availableQuantity +", New Inventory: " + (availableQuantity - requestedQuantity) + "</p>");
+        }
+    } else {
+        transactionSuccess = false; // transaction failed
+        break;
+    }
+    rsInventory.close();
+    psmtInventory.close();
+}
+
+
+//maybe should update without using this and just have if or else statements to
+//check if first if item has inventorty and if they do not then cancel
+//else update inventory for each item
+if (transactionSuccess) {
+    con.commit(); // Commit all updates
+    out.println("<p>Shipment successfully processed for Order ID: " + orderId + "</p>");
+} else {
+    con.rollback(); // Rollback all changes
+
+}
 
 // TODO: Auto-commit should be turned back on
-	
+	con.setAutoCommit(true);
 
 
 } catch (SQLException ex) {
 	out.println("<p>Error retrieving orders: " + ex.getMessage() + "</p>");
 } finally {
-	closeConnection(); // Ensure the connection is closed
+	closeConnection(); 
 	transactionSuccess = false;
 }
 
-
-
-
-// 
-
-
-
-
-
-
 %>                       				
 
-<h2><a href="shop.html">Back to Main Page</a></h2>
+<h2><a href="index.jsp">Back to Main Page</a></h2>
 
 </body>
 </html>
