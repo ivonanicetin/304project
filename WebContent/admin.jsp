@@ -5,44 +5,46 @@
 </head>
 <body>
 
-
-<%@ include file="auth.jsp" %>
-<%@ include file="jdbc.jsp" %> 
+<%@ include file="auth.jsp"%>
 <%@ page import="java.text.NumberFormat" %>
+<%@ include file="jdbc.jsp" %>
 
 <%
-String authenticatedUser = (String) session.getAttribute("authenticatedUser");
+	String userName = (String) session.getAttribute("authenticatedUser");
+%>
+
+<%
+
+// Print out total order amount by day
+String sql = "select year(orderDate), month(orderDate), day(orderDate), SUM(totalAmount) FROM OrderSummary GROUP BY year(orderDate), month(orderDate), day(orderDate)";
+
 NumberFormat currFormat = NumberFormat.getCurrencyInstance();
-if (authenticatedUser != null) {
-    try {
-        getConnection(); // Establish the database connection
-        
-        // Prepare the SQL query to fetch orders for the logged-in user
-        String query = "SELECT orderDate, totalAmount FROM ordersummary os JOIN customer s ON os.customerId = s.customerId WHERE userid = ?";
-        PreparedStatement psmt = con.prepareStatement(query);
-        psmt.setString(1, authenticatedUser); // Bind the authenticated user's ID
 
-        //table
-        out.println("<table border = 1 ");
-        out.println("<tr><th>Order Date</th><th>Total Amount</th></tr>");
+try 
+{	
+	out.println("<h3>Administrator Sales Report by Day</h3>");
+	
+	getConnection();
+	Statement stmt = con.createStatement(); 
+	stmt.execute("USE orders");
 
-        ResultSet rs = psmt.executeQuery();
-        //print out data for table
-        while (rs.next()) {
-            out.print("<tr><td>"+rs.getDate("orderDate")+"</td><td>"+currFormat.format(rs.getDouble("totalAmount"))+"</td></tr>");
-        }
-        rs.close();
-        psmt.close();
+	ResultSet rst = con.createStatement().executeQuery(sql);		
+	out.println("<table class=\"table\" border=\"1\">");
+	out.println("<tr><th>Order Date</th><th>Total Order Amount</th>");	
 
-    } catch (SQLException ex) {
-        out.println("<p>Error retrieving orders: " + ex.getMessage() + "</p>");
-    } finally {
-        closeConnection();
-    }
-} else {
-    out.println("<p>No authenticated user found. Please log in again.</p>");
+	while (rst.next())
+	{
+		out.println("<tr><td>"+rst.getString(1)+"-"+rst.getString(2)+"-"+rst.getString(3)+"</td><td>"+currFormat.format(rst.getDouble(4))+"</td></tr>");
+	}
+	out.println("</table>");		
 }
-        
+catch (SQLException ex) 
+{ 	out.println(ex); 
+}
+finally
+{	
+	closeConnection();	
+}
 %>
 
 </body>
