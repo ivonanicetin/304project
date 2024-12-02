@@ -55,7 +55,6 @@
             <a href="addcart.jsp">Cart</a>
             <a href="admin.jsp">Admin</a>
             <%
-                // Declare userName and check session attribute
                 String userName = (String) session.getAttribute("authenticatedUser");
                 if (userName != null) {
             %>

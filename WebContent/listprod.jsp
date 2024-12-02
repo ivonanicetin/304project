@@ -35,14 +35,16 @@ catch (SQLException ex)
 */
 %>
 
-  <option>Beverages</option>
-  <option>Condiments</option>
-  <option>Confections</option>
-  <option>Dairy Products</option>
-  <option>Grains/Cereals</option>
-  <option>Meat/Poultry</option>
-  <option>Produce</option>
-  <option>Seafood</option>       
+<option>All</option>
+<option>Sneakers</option>
+<option>Boots</option>
+<option>Sandals</option>
+<option>Heels</option>
+<option>Loafers</option>
+<option>Slippers</option>
+<option>Athletic Shoes</option>
+<option>Formal Shoes</option>
+  
   </select>
   <input type="text" name="productName" size="50">
   <input type="submit" value="Submit"><input type="reset" value="Reset"></p>
@@ -51,14 +53,15 @@ catch (SQLException ex)
 <%
 // Colors for different item categories
 HashMap<String,String> colors = new HashMap<String,String>();		// This may be done dynamically as well, a little tricky...
-colors.put("Beverages", "#0000FF");
-colors.put("Condiments", "#FF0000");
-colors.put("Confections", "#000000");
-colors.put("Dairy Products", "#6600CC");
-colors.put("Grains/Cereals", "#55A5B3");
-colors.put("Meat/Poultry", "#FF9900");
-colors.put("Produce", "#00CC00");
-colors.put("Seafood", "#FF66CC");
+colors.put("Sneakers", "#0000FF");
+colors.put("Boots", "#FF0000");
+colors.put("Sandals", "#6600CC");
+colors.put("Heels", "#55A5B3");
+colors.put("Loafers", "#FF9900");
+colors.put("Slippers", "#00CC00");
+colors.put("Athletic Shoes", "#FF66CC");
+colors.put("Formal Shoes", "#FF9900");
+
 %>
 
 <%
