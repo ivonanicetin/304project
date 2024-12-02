@@ -1,5 +1,8 @@
 <%@ page import="java.util.HashMap" %>
+<%@ include file="header.jsp" %>
 <%@ page import="java.util.ArrayList" %>
+
+
 <%
 // Get the current list of products
 @SuppressWarnings({"unchecked"})
@@ -10,11 +13,21 @@ if (productList == null)
 	productList = new HashMap<String, ArrayList<Object>>();
 }
 
+// Check if a "remove" action was requested
+String removeId = request.getParameter("removeId");
+if (removeId != null && productList.containsKey(removeId)) {
+    // Remove the product with the given ID
+    productList.remove(removeId);
+} else {
+
+
 // Add new product selected
 // Get product information
 String id = request.getParameter("id");
 String name = request.getParameter("name");
 String price = request.getParameter("price");
+
+ if (id != null && name != null && price != null) {
 Integer quantity = new Integer(1);
 
 // Store product information in an ArrayList
@@ -32,6 +45,8 @@ if (productList.containsKey(id))
 }
 else
 	productList.put(id,product);
+ }
+}
 
 session.setAttribute("productList", productList);
 %>

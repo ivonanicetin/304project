@@ -8,9 +8,12 @@
 <%@ include file="auth.jsp"%>
 <%@ page import="java.text.NumberFormat" %>
 <%@ include file="jdbc.jsp" %>
+<%-- if you have a file without the header add this! --%>
+ <%@ include file="header.jsp" %>  
 
 <%
-	String userName = (String) session.getAttribute("authenticatedUser");
+// if you get an error when you add the header comment out this
+	// String userName = (String) session.getAttribute("authenticatedUser");
 %>
 
 <%
@@ -56,6 +59,49 @@ finally
 {	
 	closeConnection();	
 }
+%>
+
+
+<h3>Edit Account Information</h3>
+
+<!-- Form to update address and password -->
+<form action="customer.jsp" method="post">
+    <label for="address">New Address:</label><br>
+    <input type="text" id="address" name="address" value=""><br><br>
+    
+    <label for="password">New Password:</label><br>
+    <input type="password" id="password" name="password" value=""><br><br>
+    
+    <input type="submit" value="Update Information">
+</form>
+
+<%
+    // updating password and address
+    String newAddress = request.getParameter("address");
+    String newPassword = request.getParameter("password");
+
+    if (newAddress != null && !newAddress.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
+        String updateSql = "UPDATE Customer SET address = ?, password = ? WHERE userid = ?";
+        
+        try {
+            getConnection();
+            PreparedStatement updatePstmt = con.prepareStatement(updateSql);
+            updatePstmt.setString(1, newAddress);
+            updatePstmt.setString(2, newPassword);
+            updatePstmt.setString(3, userName);
+
+            int rowsUpdated = updatePstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                out.println("<p>Account information updated successfully.</p>");
+            } else {
+                out.println("<p>Error updating account information.</p>");
+            }
+        } catch (SQLException ex) {
+            out.println("Error: " + ex.getMessage());
+        } finally {
+            closeConnection();
+        }
+    }
 %>
 
 </body>

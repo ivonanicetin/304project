@@ -1,34 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-        <title>Julia & Ivona's Grocery Main Page</title>
+    <%@ include file="header.jsp" %> <!-- Includes header logic -->
+    <title>Julia & Ivona's SS Main Page</title>
+    <style>
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Banner styling */
+        .banner {
+            position: relative; /* To enable positioning of overlay text */
+            background: url('img/banner.jpg') no-repeat center center;
+            background-size: cover;
+            height: 800px;
+        }
+
+        /* Text overlay styling */
+        .banner-text {
+            position: absolute;
+            top: 50%; /* Center vertically */
+            right: 12%; /* Position on the right */
+            transform: translateY(-50%);
+            color: #8B0000;
+            font-size: 60px;
+            font-weight: bold;
+            line-height: 1.2; /* Adjusts spacing between lines */
+        }
+
+        /* Content section styling */
+        .content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .content h2 a {
+            color: #008080;
+            text-decoration: none;
+        }
+
+        .content h2 a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h1 align="center">Welcome to Julia and Ivona's Grocery</h1>
+    <!-- Banner Section -->
+    <div class="banner">
+        <div class="banner-text">
+            JV's Shoe Store
+        </div>
+    </div>
 
-<h2 align="center"><a href="login.jsp">Login</a></h2>
-
-<h2 align="center"><a href="listprod.jsp">Begin Shopping</a></h2>
-
-<h2 align="center"><a href="listorder.jsp">List All Orders</a></h2>
-
-<h2 align="center"><a href="customer.jsp">Customer Info</a></h2>
-
-<h2 align="center"><a href="admin.jsp">Administrators</a></h2>
-
-<h2 align="center"><a href="logout.jsp">Log out</a></h2>
-
-<%
-	String userName = (String) session.getAttribute("authenticatedUser");
-	if (userName != null)
-		out.println("<h3 align=\"center\">Signed in as: "+userName+"</h3>");
-%>
-
-<h4 align="center"><a href="ship.jsp?orderId=1">Test Ship orderId=1</a></h4>
-
-<h4 align="center"><a href="ship.jsp?orderId=3">Test Ship orderId=3</a></h4>
-
+    <!-- Content Section -->
+    <%-- <div class="content">
+        <!-- Optionally display user information -->
+        <% 
+            if (session.getAttribute("authenticatedUser") != null) {
+                out.println("<h3>Welcome to Julia & Ivona's Shoe Store!</h3>");
+            } else {
+                out.println("<h3>Please log in to access all features.</h3>");
+            }
+        %>
+    </div> --%>
 </body>
-</head>
-
-
+</html>
