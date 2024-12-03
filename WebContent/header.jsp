@@ -66,6 +66,7 @@
             <%
                 }
             %>
+            <a href="logout.jsp">Logout</a>
         </nav>
     </div>
 </body>
