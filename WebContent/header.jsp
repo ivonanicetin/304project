@@ -51,7 +51,7 @@
             <a href="index.jsp">Home</a>
             <a href="listprod.jsp">Begin Shopping</a>
             <a href="listorder.jsp">Orders</a>
-            <a href="customer.jsp">Customer Info</a>
+            <a href="customer.jsp">Account</a>
             <a href="addcart.jsp">Cart</a>
             <a href="admin.jsp">Admin</a>
             <%
