@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <title>Ray's Grocery - Product Information</title>
+    <title>JV's - Product Information</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* CSS for resizing product images */

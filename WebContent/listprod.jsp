@@ -5,7 +5,7 @@
 
 <html>
 <head>
-<title>Ray's Grocery</title>
+<title>JV's Shoe Store</title>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
