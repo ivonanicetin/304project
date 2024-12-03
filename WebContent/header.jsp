@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Header - Julia & Ivona's Shoe Store</title>
+    <title>Julia & Ivona's Shoe Store</title>
     <style>
         /* General body styling */
         body {

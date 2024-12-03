@@ -8,7 +8,7 @@
 <html>
 <head>
     <%@ include file="header.jsp" %> <!-- Includes header logic -->
-    <title>Julia & Ivona's SS Main Page</title>
+    <title>JV's Shoe Store Main Page</title>
     <style>
         /* General body styling */
         body {

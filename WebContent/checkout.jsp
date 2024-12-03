@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Julia & Ivona's Grocery CheckOut Line</title>
+<title>JV's Shoe Store CheckOut </title>
 </head>
 <body>
 
